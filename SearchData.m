@@ -53,6 +53,34 @@ else
     end
 end
 
+
+% liest die Textdatei mit den Sätzen ein
+% 1 Spalte: Satz 2 Spalte: Satzbezeichnung
+fid = fopen('TIMIT MIT/prompts.txt'); 
+data = textscan(fid,'%[^(] %s');
+fclose(fid);
+
+% Schleife soll eigentlich absuchen ob der eingegebene Satz mit einem Satz
+% aus der ersten Spalte des cell arrays data übereinstimmt - tut das aber
+% irgendwie nicht - sollte eigentlich eine logische 1 im Falle der
+% Übereinstimmung wiedergeben und die entsprechende Satzbezeichnung in
+% cDir2seek einspeichern um dann später im Directory danach suchen zu
+% können
+if sSentence ~= ' '
+    for i = (1:length(data{1}))
+        if strcmp(sSentence,data{1}{i}) == 1
+                cDir2seek{1,1} = data{2}{i}; 
+        end
+    end
+    
+else
+    for i = (1:length(data{1})) 
+             counter = counter + 1;
+             cDir2seek{1,counter} = data{2}{i};
+    end
+end
+% else Block wird ausgeführt und gibt Liste der Satzbezeichnungen wieder
+
 %% 
 
 
@@ -69,7 +97,7 @@ end
 % to the following conditions:
 % The above copyright notice and this permission notice shall be included 
 % in all copies or substantial portions of the Software.
-% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+ % THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
 % EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
 % OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
 % IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
