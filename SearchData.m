@@ -1,54 +1,68 @@
-% script to ...
-% Usage: run(...)
-% Input parameter: None
-% Output parameter: None
+% Skript, um eine Datenbank nach verschiedenen Kriterien zu durchsuchen
+% Usage: run(SearchData)
+% Input Parameter: Suchkriterien per Benutzerabfrage
 % Output:
-% plays the sum signal
-% plots the sum signal
-%-------------------------------------------------------------------------%
-% Authors: A. Decker, A. Morgenstern, S. Pape
+% - Abspielen der gefundenen Sätze, wenn gewünscht
+% - Anzeigen des Ordnerpfads der gefundenen Sätze und der Sätze selbst
+%-------------------------------------------------------------------------
+% Autoren: A. Decker, A. Morgenstern, S. Pape
 % (c) IHA @ Jade Hochschule applied licence see EOF 
-% Sources: 
-%   - inputdlg, Matlab documentation
-% function 'SinSignal' by J. Bitzer and M. Hansen, taken from the script
-% 'Grundlagenpraktikum: Matlabversuche'
-%-fgetl
-% VERSION 2.1
-%-------------------------------------------------------------------------%
+% VERSION 2.2
+%-------------------------------------------------------------------------
+%TO DO:
+% - Benutzer Möglichkeit geben Abspielen abzubrechen
+% - Eine richtige Fehlermeldung wenn es eine Kombination von ...
+% Kriterien nicht gibt (einfachste: bei jeder Meldung "/Kombi gibts nicht")
+% - Momentan wird nur der Ordnerpfad am Ende ausgegeben, der Satz  in ...
+% diesem Pfad sollte am besten auch gezeigt werden
+% - Die Ausgabe des Pfades mit Satz "schöner" gestalten
+% - verschönern der Kommentierung bzw. ergänzen
 
+clear all;
 
 %% Abfrage und Speicherung der Suchkriterien 
-%GUI für den Benutzer um Suchkriterien einzugeben, in Grundeinstellung leer
-prompt = {'Sprechername:','Satz/Satzteil:','Wort:','Phonem:'};
-dlg_title = 'Suchkriterien';
-num_lines = 1;
-def = {'','','',''};
-answer = inputdlg(prompt,dlg_title,num_lines,def);
+% GUI für den Benutzer um Suchkriterien einzugeben, in Grundeinstellung leer
+Ueberschrift = {'Sprechername:','Satz/Satzteil:','Wort:','Phonem:'};
+Titel = 'Suchkriterien';
+anzahlLinien = 1;
+standard = {'','','',''};
+answer = inputdlg(Ueberschrift,Titel,anzahlLinien,standard);
 
-%Speichert jedes Kriterium in eigene Variable
+% Speichert jedes Kriterium in eigene Variable
 sPerson = answer{1};
 sSatz = answer{2};
 sWort = answer{3};
 sPhonem = answer{4};
 
 
-%% 1.Block: Sucht mit Kriterium PERSON/ALLEN PERSONEN  nach Satz und speichert diese mit Pfad in das Array "cPersonKriterium"
+%% 1.Block: Sucht mit Kriterium PERSON nach Satz und speichert diese ...
+%           mit Pfad in das Array "cPersonKriterium"
 cPersonKriterium = {};
-counterPerson = 0; % counter to fill array of found directory names
+counterPerson = 0; %Counter um Array mit Ornernamen zu füllen
 
 dateiID = fopen('TIMIT MIT\allsenlist.txt'); 
 zeile = fgetl(dateiID); %Eine Zeile wird aus "allsenlist.txt" rausgelesen
 while ischar(zeile)
-    pfad = zeile(1:min(strfind(zeile, char(9)))-1); %vorderen Teil mit Pfad aus Zeile ausgeschnitten
-    if not(isempty(sPerson))  %Wenn nach einer Person gesucht wird ...
-        if regexp(pfad,strcat('[a-zA-Z0-9]+\-[mf]',sPerson)) %Kommt gesuchte Person in Pfad vor?
-            satz = zeile(max(strfind(zeile, char(9)))+1:end); %hinteren Teil mit Satz aus Zeile ausgeschnitten
+    pfad = zeile(1:min(strfind(zeile, char(9)))-1); %Vorderen Teil mit Pfad...
+                                                    %aus Zeile ausgeschnitten
+    % Wenn nach einer Person gesucht wird, werden die passenden Sätze/Pfade...
+    %in "cPersonKriterium" gespeichert
+    if not(isempty(sPerson))
+        if regexp(pfad,strcat('[a-zA-Z0-9]+\-[mf]',sPerson)) %Kommt gesuchte ...
+                                                             %Person in Pfad vor?
+            satz = zeile(max(strfind(zeile, char(9)))+1:end); %Hinteren Teil ...
+                                                              %mit Satz aus ...
+                                                              %Zeile ausschneiden
             counterPerson = counterPerson + 1;  %Counter für Ergebnis-Array von Pfad + Satz
-            cPersonKriterium{counterPerson,2} = strcat({' '}, satz, {' '}); %Notwendig, damit einzelne Worte am Satzanfang/-ende gefunden werden können
+            %Hinzufügen von Leerzeichen in nächster Zeile notwendig, damit nur ...
+            %ganze Worte gefunden werden
+            cPersonKriterium{counterPerson,2} = strcat({' '}, satz, {' '});
             cPersonKriterium{counterPerson,1} = pfad;
         end
-    else % Wenn nach keiner Person gesucht: Alle Sätze + Pfad in Array
-        satz = zeile(max(strfind(zeile, char(9)))+1:end); %hinteren Teil mit Satz aus Zeile ausgeschnitten
+    % Wenn keine Person gesucht wird: Alle Sätze + Pfade in Array speichern  
+    else
+        satz = zeile(max(strfind(zeile, char(9)))+1:end); %Hinteren Teil mit ...
+                                                          %Satz aus Zeile ausgeschnitten
         counterPerson = counterPerson + 1;  %Counter für Ergebnis-Array von Pfad + Satz
         cPersonKriterium{counterPerson,2} = strcat({' '}, satz, {' '});
         cPersonKriterium{counterPerson,1} = pfad;
@@ -63,42 +77,96 @@ counterWort = 0;
 cWortKriterium = {};
 
 % Ergebnisse in "cPersonKriterium" nach Kriterium WORT durchsuchen
-for n = 1:counterPerson 
- if not(isempty(sWort)) %Wird ein Wort gesucht?
-    testWortVorhanden = regexp(cPersonKriterium{n,2},strcat({' '}, sWort, {' '})); %Notwendig, damit nur ganze Worte gefunden werden
-    if not(cellfun(@isempty,testWortVorhanden)) % Überprüft nacheinander ob gesuchtes WORT in einem Satz aus Array "cPersonKriterium" vorkommt
-        counterWort = counterWort + 1;  %Counter für Ergebnis-Array von Pfad + Satz
-        cWortKriterium{counterWort,2} = cPersonKriterium{n,2};
-        cWortKriterium{counterWort,1} = cPersonKriterium{n,1};
-    end    
+if not(isempty(sWort)) %Wird ein Wort gesucht?
+    for n = 1:counterPerson
+        %Hinzufügen von Leerzeichen in nächster Zeile notwendig, damit nur ...
+        %ganze Worte gefunden werden
+        testWortVorhanden = regexp(cPersonKriterium{n,2},strcat({' '}, sWort, {' '})); 
+        % Überprüft nacheinander ob gesuchtes WORT in einem Satz aus ...
+        %Array "cPersonKriterium" vorkommt
+        if not(cellfun(@isempty,testWortVorhanden)) 
+            counterWort = counterWort + 1;  %Counter für Ergebnis-Array von Pfad + Satz
+            cWortKriterium{counterWort,2} = cPersonKriterium{n,2};
+            cWortKriterium{counterWort,1} = cPersonKriterium{n,1};
+        end
+    end
  else %Alle Sätze in "cWortKriterium" speichern wenn kein Kriterium gegeben
-     counterWort = counterWort + 1;  %Counter für Ergebnis-Array von Pfad + Satz
-     cWortKriterium{counterWort,2} = cPersonKriterium{n,2};
-     cWortKriterium{counterWort,1} = cPersonKriterium{n,1};
- end
+    cWortKriterium = cPersonKriterium;
+    counterWort = counterPerson;    %Da array mit counterWort nicht durchgezählt ...
+                                    %wird: alten Counter-Wert übernehmen
 end
 
 
-%% 3. Block: Suche von Satz/Satzteil in "cPersonKriterium" aus 1. Block
-%IN ORDNUNG DAS ER AUCH SATZTEILE SUCHT??? (ich glaube ja, dann muss man nicht den ganzen Satz eingeben)
+%% 3. Block: Suche von Satz/Satzteil in "cWortKriterium" aus 1. Block
 counterSatz= 0;
 cSatzKriterium = {};
 
 % Ergebnisse in "cPersonKriterium" nach Kriterium SATZ durchsuchen
-for n = 1:counterPerson 
- if not(isempty(sSatz)) %Wird ein Satz gesucht?
-    testSatzVorhanden = regexp(cPersonKriterium{n,2},strcat({' '}, sSatz, {' '})); %Für Übersicht außerhalb der if-Abfrage definiert
-    if not(cellfun(@isempty,testSatzVorhanden)) % Überprüft nacheinander ob gesuchter SATZ in Array "cPersonKriterium" vorkommt
-        counterSatz = counterSatz + 1;  %Counter für Ergebnis-Array von Pfad + Satz
-        cSatzKriterium{counterSatz,2} = cPersonKriterium{n,2};
-        cSatzKriterium{counterSatz,1} = cPersonKriterium{n,1};
+if not(isempty(sSatz)) %Wird ein Satz gesucht?
+    for n = 1:counterWort 
+        testSatzVorhanden = regexp(cWortKriterium{n,2},strcat({' '}, sSatz, {' '})); 
+        % Überprüft nacheinander ob gesuchter SATZ in Array "cPersonKriterium" vorkommt
+        if not(cellfun(@isempty,testSatzVorhanden)) 
+            counterSatz = counterSatz + 1;  %Counter für Ergebnis-Array von Pfad + Satz
+            cSatzKriterium{counterSatz,2} = cWortKriterium{n,2};
+            cSatzKriterium{counterSatz,1} = cWortKriterium{n,1};
+        end
     end
- else %Alle Sätze in "cSatzKriterium" speichern wenn kein Kriterium gegeben
-     counterSatz = counterSatz + 1;  %Counter für Ergebnis-Array von Pfad + Satz
-     cSatzKriterium{counterSatz,2} = cPersonKriterium{n,2};
-     cSatzKriterium{counterSatz,1} = cPersonKriterium{n,1};
- end
+% Alle Sätze in "cSatzKriterium" speichern wenn kein Kriterium gegeben    
+else
+    cSatzKriterium = cWortKriterium;
+    counterSatz = counterWort;  %Da array mit counterSatz nicht durchgezählt ...
+                                %wird: alten Counter-Wert übernehmen
 end
+
+
+%% 4.Block: Sucht mit Kriterium PHONEM nach Satz und speichert diese ...
+%           mit Pfad in das Array "cPhonemKriterium"
+counterErgebnis = 0;
+cSuchErgebnis = {};
+
+% Wenn nach einem Phonem gesucht wird speichern der Pfade + Sätze in ...
+%"cPhonemKriterium"
+if not(isempty(sPhonem))  
+    cPhonemKriterium = {};
+    counterPhonem = 0; %Counter um Array mit gefundenen Pfaden zu füllen
+
+    dateiID = fopen('TIMIT MIT\allphonelist.txt'); 
+    zeile = fgetl(dateiID); %Eine Zeile wird aus "allphonelist.txt" rausgelesen
+    while ischar(zeile)
+        pfad = zeile(1:min(strfind(zeile, char(9)))-1); %Vorderen Teil mit Pfad ...
+                                                        %aus Zeile ausgeschnitten
+        satz = zeile(max(strfind(zeile, char(9)))+3:end-3); %Hinteren Teil mit ...
+                                                            %Satz aus Zeile ausgeschnitten
+        testPhonemVorhanden = regexp(satz,strcat({' '}, sPhonem, {' '}));
+        % Überprüft nacheinander ob gesuchtes PHONEM in der Zeile vorkommt
+        if not(cellfun(@isempty,testPhonemVorhanden)) 
+            counterPhonem = counterPhonem + 1;  %Counter hochzählen
+            cPhonemKriterium{counterPhonem,2} = satz;
+            cPhonemKriterium{counterPhonem,1} = pfad;
+        end
+        zeile = fgetl(dateiID);
+    end
+    fclose(dateiID);
+%%4.1 Block: Speichert alle Ordnerpfade in "cSuchErgebnis" für die ALLE Kriterien zutreffen     
+    %Vergleicht Ordnerpfade in "cSatzKriterium" mit denen in ...
+    %"cPhonemKriterium" und speichert die übereinstimmenden Ergebnisse
+    for nSatz = 1:counterSatz
+        for nPhonem = 1:counterPhonem
+            if strcmp(cSatzKriterium{nSatz,1},cPhonemKriterium{nPhonem,1})
+                counterErgebnis = counterErgebnis + 1;
+                cSuchErgebnis{counterErgebnis,1} = cSatzKriterium{nSatz,1};
+                cSuchErgebnis{counterErgebnis,2} = cSatzKriterium{nSatz,2};
+                break
+            end
+        end
+    end
+% Alle Sätze in "cSuchErgebnis" speichern wenn kein Kriterium gegeben   
+else 
+    cSuchErgebnis = cSatzKriterium; 
+    counterErgebnis = counterSatz;
+end
+
 
 %% Error-Ausgabe wenn ein Suchbegriff nicht existiert
 if not(isempty(sPerson)) && isempty(cPersonKriterium)
@@ -113,53 +181,62 @@ if not(isempty(sSatz)) && isempty(cSatzKriterium)
     error('Satz/Satzteil ist nicht in der Datenbank vorhanden!')
 end
 
+if not(isempty(sPhonem)) && isempty(cPhonemKriterium)
+    error('Phonem ist nicht in der Datenbank vorhanden!')
+end
 
 
+%% Abspielen der wav.-Dateien von Ordnerpfaden wenn gewünscht
+%Benutzerabfrage ob gefundene Sätze abgespielt werden sollen 
+Frage = ['Anzahl der gefundenen Sätze: ' num2str(counterErgebnis) ...
+       '. Möchten Sie diese nun abspielen?'];
+sEntscheidung = questdlg(Frage, 'Benutzerabfrage Abspielen', ...
+        'Ja','Nein','Nein');
 
+%Antwort wird verarbeitet. Ja = Abspielen & Ordnerpfad anzeigen; Nein = nur anzeigen
+switch sEntscheidung
+    case 'Ja'
+        for n = 1:counterErgebnis
+            % Datei(en) aus "cSuchErgebnis" mit Überordner und .wav ergänzen,
+            sErgebnisWav = strcat('TIMIT MIT\', cSuchErgebnis{n,1}, '.wav');
+            [y,Fs] = audioread(sErgebnisWav);
+            %Rauschentfernungsblock----------------------------------------
+            % Überprüft ob im aktuellen ein lautes Rauschen vorhanden ist
+            if max(y) > 0.2 || max(y) < -0.2;
+                % Macht Rauschen leiser und kennzeichnet dies beim Pfad-Namen
+                cSuchErgebnis{n,1} = strcat(cSuchErgebnis{n,1},' !RAUSCHEN GEDÄMPFT');
+                for counterSound = 1:length(y)
+                    % Alle Amplituden größer +- 0,2 werden mit 0 ersetzt ...
+                    %(bei geringerer Grenzamplitude würde Normale beeinflusst)
+                    if y(counterSound,1) > 0.2 || y(counterSound,1) < -0.2
+                        y(counterSound,1) = 0;
+                    end
+            %Rauschentfernungsblock-Ende-----------------------------------
+                end
+            end
+            %Abspielen des Satzes
+            player = audioplayer(y, Fs); %erstellt "audioplayer" Objekt
+            playblocking(player); %.wav werden nacheinander abgespielt
+        end
+        % Ausgabe der Ordnerpfade der gefundenen Sätze und der Sätze selbst
+        disp('Die Sätze die Ihren Kriterien entsprechen (mit Dateipfaden):')
+        if size(cSuchErgebnis,1) == 1
+            disp([cSuchErgebnis{1,1} cSuchErgebnis{1,2}])
+        else 
+            for n = (1:length(cSuchErgebnis))
+            disp([cSuchErgebnis{n,1} cSuchErgebnis{n,2}])
+            end
+        end
+        
+    case 'Nein'
+        % Ausgabe der Ordnerpfade der gefundenen Sätze und der Sätze selbst
+        disp('Die Sätze die Ihren Kriterien entsprechen (mit Dateipfaden):')
+        if size(cSuchErgebnis,1) == 1
+            disp([cSuchErgebnis{1,1} cSuchErgebnis{1,2}]) 
+        else
+            for n = (1:length(cSuchErgebnis))
+                disp([cSuchErgebnis{n,1} cSuchErgebnis{n,2}])
+            end
+        end
+end
 
-
-%% ALT!
-% listing = dir('TIMIT MIT');
-% cDir2seek = {}; %c DAVOR WIRKLICH FÜR EINEN CELL ARRAY??
-% 
-% %if-loop to check if criterion is not empty and to save directory names
-% %which fit criteria
-% if sPerson ~= ' '
-%     for i = (1:length(listing))
-%          if listing(i).isdir == 1 % checks if result is directory
-%              listing(i).name
-%              if regexp(listing(i).name,strcat('[a-zA-Z0-9]+\-[mf]',sPerson)) % checks if name matches
-%                 cDir2seek{1,1} = listing(i).name; % saves directory name in cell array
-%              end
-%          end
-%     end
-% else
-%     for i = (1:length(listing)) % if no name qualified, creates cell array of all directory names
-%          if listing(i).isdir == 1 && length(listing(i).name)>4 % checks if valid directory
-%              counter = counter + 1;
-%              cDir2seek{1,counter} = listing(i).name;
-%          end
-%     end
-% end
-
-
-%--------------------Licence ---------------------------------------------
-% Copyright (c) <2014> A. Decker, A. Morgenstern, S. Pape
-% Institute for Hearing Technology and Audiology
-% Jade University of Applied Sciences Oldenburg 
-% Permission is hereby granted, free of charge, to any person obtaining 
-% a copy of this software and associated documentation files 
-% (the "Software"), to deal in the Software without restriction, including 
-% without limitation the rights to use, copy, modify, merge, publish, 
-% distribute, sublicense, and/or sell copies of the Software, and to 
-% permit persons to whom the Software is furnished to do so, subject 
-% to the following conditions:
-% The above copyright notice and this permission notice shall be included 
-% in all copies or substantial portions of the Software.
- % THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-% EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
-% OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-% IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
-% CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
-% TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
-% SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
