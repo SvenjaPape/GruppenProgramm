@@ -7,16 +7,8 @@
 %-------------------------------------------------------------------------
 % Autoren: A. Decker, A. Morgenstern, S. Pape
 % (c) IHA @ Jade Hochschule applied licence see EOF 
-% VERSION 2.2
+% VERSION 2.3
 %-------------------------------------------------------------------------
-%TO DO:
-% - Benutzer Möglichkeit geben Abspielen abzubrechen
-% - Eine richtige Fehlermeldung wenn es eine Kombination von ...
-% Kriterien nicht gibt (einfachste: bei jeder Meldung "/Kombi gibts nicht")
-% - Momentan wird nur der Ordnerpfad am Ende ausgegeben, der Satz  in ...
-% diesem Pfad sollte am besten auch gezeigt werden
-% - Die Ausgabe des Pfades mit Satz "schöner" gestalten
-% - verschönern der Kommentierung bzw. ergänzen
 
 clear all;
 
@@ -47,7 +39,7 @@ while ischar(zeile)
                                                     %aus Zeile ausgeschnitten
     % Wenn nach einer Person gesucht wird, werden die passenden Sätze/Pfade...
     %in "cPersonKriterium" gespeichert
-    if not(isempty(sPerson))
+    if not(isempty(sPerson)) %Wird eine Person gesucht?
         if regexp(pfad,strcat('[a-zA-Z0-9]+\-[mf]',sPerson)) %Kommt gesuchte ...
                                                              %Person in Pfad vor?
             satz = zeile(max(strfind(zeile, char(9)))+1:end); %Hinteren Teil ...
@@ -127,7 +119,7 @@ cSuchErgebnis = {};
 
 % Wenn nach einem Phonem gesucht wird speichern der Pfade + Sätze in ...
 %"cPhonemKriterium"
-if not(isempty(sPhonem))  
+if not(isempty(sPhonem))  %Wird ein Wort gesucht?
     cPhonemKriterium = {};
     counterPhonem = 0; %Counter um Array mit gefundenen Pfaden zu füllen
 
@@ -148,6 +140,7 @@ if not(isempty(sPhonem))
         zeile = fgetl(dateiID);
     end
     fclose(dateiID);
+    
 %%4.1 Block: Speichert alle Ordnerpfade in "cSuchErgebnis" für die ALLE Kriterien zutreffen     
     %Vergleicht Ordnerpfade in "cSatzKriterium" mit denen in ...
     %"cPhonemKriterium" und speichert die übereinstimmenden Ergebnisse
@@ -169,6 +162,8 @@ end
 
 
 %% Error-Ausgabe wenn ein Suchbegriff nicht existiert
+% Wenn ein Suchbegriff eingegeben wurde, jedoch kein Ergebnis dazu gefunden ...
+%wurde: Fehlerausgabe bezüglich dieses Kriteriums
 if not(isempty(sPerson)) && isempty(cPersonKriterium)
     error('Sprecher ist nicht in der Datenbank vorhanden!')
 end
@@ -186,14 +181,14 @@ if not(isempty(sPhonem)) && isempty(cPhonemKriterium)
 end
 
 
-%% Abspielen der wav.-Dateien von Ordnerpfaden wenn gewünscht
-%Benutzerabfrage ob gefundene Sätze abgespielt werden sollen 
+%% Ausgabe: Abspielen der wav.-Dateien von Ordnerpfaden wenn gewünscht
+% Benutzerabfrage ob gefundene Sätze abgespielt werden sollen 
 Frage = ['Anzahl der gefundenen Sätze: ' num2str(counterErgebnis) ...
        '. Möchten Sie diese nun abspielen?'];
 sEntscheidung = questdlg(Frage, 'Benutzerabfrage Abspielen', ...
         'Ja','Nein','Nein');
 
-%Antwort wird verarbeitet. Ja = Abspielen & Ordnerpfad anzeigen; Nein = nur anzeigen
+% Antwort wird verarbeitet. Ja = Abspielen & Ordnerpfad anzeigen; Nein = nur anzeigen
 switch sEntscheidung
     case 'Ja'
         for n = 1:counterErgebnis
@@ -207,7 +202,7 @@ switch sEntscheidung
                 cSuchErgebnis{n,1} = strcat(cSuchErgebnis{n,1},' !RAUSCHEN GEDÄMPFT');
                 for counterSound = 1:length(y)
                     % Alle Amplituden größer +- 0,2 werden mit 0 ersetzt ...
-                    %(bei geringerer Grenzamplitude würde Normale beeinflusst)
+                    %(bei geringerer Grenzamplitude würden Normale beeinflusst)
                     if y(counterSound,1) > 0.2 || y(counterSound,1) < -0.2
                         y(counterSound,1) = 0;
                     end
@@ -239,4 +234,3 @@ switch sEntscheidung
             end
         end
 end
-
