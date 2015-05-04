@@ -3,6 +3,7 @@
 > Dieses Projekt bzw. Script SearchData.m dient als Framework zur Erfüllung der gestellen Aufgabe während des Studienmoduls Daten und Algorithmik. 
 
 **Beschreibung des Projektes**
+
 Die Aufgabe der Studierenden bestand darin anhand eines MATLAB-Scripts die MIT/TIMIT-Datenbank durchsuchen zu können. Hierbei sollen unterschiedliche Dateien bzw. Dateiausschnitte gefunden werden und mit Hilfe des Progamms auf diese zugeriffen werden können. 
 
 
@@ -17,6 +18,60 @@ Zusätzlich soll auch die Möglichkeit bestehen nach Kombinationen dieser Kriter
 
 
 **Benutzungsbeispiele**
+
+Um die das MATLAB-Script 'SearchData' richtig zu bedienen, muss das Script gestartet werden. Dadurch erfolgt eine Benutzerabfrage anhand einer GUI. In diese kann der Benutzer einen Sprecher, einen Satz/Satzteil, ein Wort oder ein Phonem eingeben. Eine Kombination der Kriterien möglich.
+
+Als Eingaben dienen die nachfolgenden Beispiele:
+>- Sprecher: arc
+- Satz/Satzteil: ask me
+- Wort: oily
+- Phonem: d
+
+In diesem Fall würde als Ergebnisausgabe ein Satz gefunden werden. Hiernach erfolgt eine weitere Benutzerabfrage. Dadurch kann der Benutzer selbst entscheiden, ob der gefundene Satz abgespielt werden soll. Bei Verneinung dieser Frage erfolgt die nachstehende Ausgabe:
+
+    Die Sätze die Ihren Kriterien entsprechen (mit Dateipfaden):
+    'dr2-marc0/sa2'    ' don't ask me to carry an oily rag like that '
+
+**Dependencies und Installationshinweise**
+
+Nachfolgende Programmme und Dateien werden zur Verwendung dieses Scripts vorausgesetzt:
+
+ - MATLAB 
+ - MIT/TIMIT-Datenbank 
+
+ Bei nicht Vorhandensein eines Punktes ist eine Bedienung des Skriptes nicht möglich. Des Weiteren muss sich das MATLAB-Script immer im selben Ordner, wie die MIT/TIMIT-Datenbank befinden.
+
+**Autoren**
+
+Die Studierenden der Jade Hochschule Oldenburg fertigten, als Aufgabe innerhalb des Studienmoduls Daten und Algorithmik, dieses MATLAB-Skript.
+Andrea Decker (6007828)
+Anika Morgenstern (6006711)
+Svenja Pape (600)
+
+**Änderungshistorie**
+
+Version 1.0 -> 14.04.2015
+	- Erstellen einer Benutzerabfrage, anhand einer GUI
+	- Auslesen der Datenbank
+	- Überprüfung der Daten auf die  geforderten Kriterien
+
+Version 1.1 -> 17.04.2015
+	 - Neue Idee zur Überprüfung der Übereinstimmung von Sätzen oder Satzteilen, mit den gesuchten Kriterien
+
+Version 2.1 -> 28.04.2015
+	 - Verbesserungen des gesamten Codes sowie der Kommentierung
+
+Version 2.2 -> 29.04.2015
+	 - Verbesserung und Ergänzung der Kommentierung des MATLAB-Codes
+	 - Lösen eines Fehlers im Abfragefenster (nun richtiges Anzeigen der Anzahl der Sätze)
+	 - Anzeigen der zutreffenden Sätze zusätzlich zum Dateipfad, als Ausgabe
+
+Version 2.3 -> 04.05.2015
+	 -  Letzte Verbesserung der Kommentierung und abschließende Überprüfung des Codes
+	 
+
+**Erklärung des MATLAB-Codes**
+
 Der nachfolgende Codeausschnitt zeigt die Erstellung der Benutzerabfrage. Diese erfolgt durch Verwendung einer GUI. In diese kann der Benutzer den Namen des gesuchten Sprechers, Satzes/Satzteils, Wortes oder Phonems eingeben. Eine Komination dieser Suchkriterien ist ebenfalls möglich.
 
     Ueberschrift = {'Sprechername:','Satz/Satzteil:','Wort:','Phonem:'};
@@ -57,38 +112,4 @@ Des Weiteren wird das vorhandene Rauschen, welches teilweise Sätze/Satzteile ü
 
 Als Abschluss wird eine erneute Benutzerabfrage gestellt, welche als Entscheidungshilfe für den Verwender des Skriptes dient. Hier kann der Benutzer entscheiden, ob die nach den Suchkriterien entsprechend gefundenen Sätze abgespielt oder andernfalls nur im Ausgabefeld angezeigt werden sollen.
 Die Soundausgabe erfolgt hierbei über den "audioplayer".
-
-
-
-**Dependencies  und Installationshinweise**
-Nachfolgende Programmme und Dateien werden zur Verwendung dieses Scripts vorausgesetzt:
-
- - MATLAB 
- - MIT/TIMIT-Datenbank 
-
- Bei nicht Vorhandensein eines Punktes ist eine Bedienung des Skriptes nicht möglich.
-
-**Autoren**
-Die Studierenden der Jade Hochschule Oldenburg fertigten, als Aufgabe innerhalb des Studienmoduls Daten und Algorithmik, dieses MATLAB-Skript.
-Andrea Decker (6007828)
-Anika Morgenstern (6006711)
-Svenja Pape (600)
-
-**Änderungshistorie**
-
-Version 1.0 -> 14.04.2015
-	- Erstellen einer Benutzerabfrage, anhand einer GUI
-	- Auslesen der Datenbank
-	- Überprüfung der Daten auf die  geforderten Kriterien
-
-Version 1.1 -> 17.04.2015
-	 - Neue Idee zur Überprüfung der Übereinstimmung von Sätzen oder Satzteilen, mit den gesuchten Kriterien
-
-Version 2.1 -> 28.04.2015
-	 - Verbesserungen des gesamten Codes sowie der Kommentierung
-
-Version 2.2 -> 29.04.2015
-	 - Verbesserung und Ergänzung der Kommentierung des MATLAB-Codes
-	 - Lösen eines Fehlers im Abfragefenster (nun richtiges Anzeigen der Anzahl der Sätze)
-	 - Anzeigen der zutreffenden Sätze zusätzlich zum Dateipfad, als Ausgabe
 	 
