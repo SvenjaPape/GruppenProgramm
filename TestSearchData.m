@@ -1,11 +1,10 @@
 % Testskript zum Matlab-Skript SearchData.m
 % Author: A.Decker, A.Morgenstern, S. Pape
 % (c) IHA @ Jade Hochschule applied licence see EOF 
-% Version History:
-% Ver. 0.01 initial create (empty) 04-May-2015 
-% Ver. 1.0  first implementation   04-May-2015 
 
 % Quellen: 
+% http://www.mathworks.com/matlabcentral/answers/77461-how-to-compare-two-cell-array
+% 04.05.2015
 
 clear;
 close all;
@@ -62,15 +61,32 @@ end
 if strcmp(sPerson,'cpm0') == 1 && strcmp(sWort,'suit')==1 ...
     && strcmp(sSatz,'had your')== 1 && strcmp(sPhonem,'sh') == 1 
 
-  assert(~isempty(regexp(char(cSuchErgebnis{2}),...
-   'she had your dark suit in greasy wash water all year','match'),...
-   'die Sätze sind nicht korrekt aufgelistet'))
-    %Testen, ob die Ordnerpfade korrekt aufgelistet wurden
+    assert(~isempty(regexp(char(cSuchErgebnis{2}),...
+   'she had your dark suit in greasy wash water all year','match')),...
+   'die Sätze sind nicht korrekt aufgelistet')
     
     assert(~isempty(regexp(char(cSatzKriterium{1}),...
-    'dr1-mcpm0/sa1','match'),...
-    'die Ordnerpfade sind nicht korrekt aufgelistet'))  
+    'dr1-mcpm0/sa1','match')),...
+    'die Ordnerpfade sind nicht korrekt aufgelistet')  
+
+    % Wenn Satz abgespielt werden soll, Test ob korrektes wav-File vor-...
+    % handen und, ob audioplayer existiert
+    
+    if strcmp(sEntscheidung,'Ja') == 1
+        assert(strcmp(sErgebnisWav,'TIMIT MIT\dr1-mcpm0/sa1.wav') == 1,...
+        'Nicht das korrekte wav-File')
+        assert(isa(player,'audioplayer')==1,...
+        'Audioplayer wurde nicht erstellt')
+    end
 end
 
-
+    % Testen, ob für die Sucheingabe die Rauschunterdrückung funktioniert
+if strcmp(sPerson,'alk0') == 1 && strcmp(sWort,'must')
+    if strcmp(sEntscheidung,'Ja') == 1
+    AmplMax = find(y > 0.2);
+    AmplMin = find(y < -0.2);
+    assert(isempty(AmplMax) && isempty(AmplMin)== 1,...
+    'keine Rauschunterdrückung')
+    end
+end
 
