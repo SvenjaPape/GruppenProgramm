@@ -6,7 +6,7 @@
 % - Anzeigen des Ordnerpfads der gefundenen Sätze und der Sätze selbst
 %-------------------------------------------------------------------------
 % Autoren: A. Decker, A. Morgenstern, S. Pape
-% (c) IHA @ Jade Hochschule applied licence see EOF 
+% (c) IHA @ Jade Hochschule applied licence see LICENCE.md 
 % VERSION 2.3
 %-------------------------------------------------------------------------
 
