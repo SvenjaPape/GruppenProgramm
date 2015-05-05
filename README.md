@@ -19,7 +19,7 @@ Zusätzlich soll auch die Möglichkeit bestehen nach Kombinationen dieser Kriter
 
 **Benutzungsbeispiele**
 
-Um die das MATLAB-Script 'SearchData' richtig zu bedienen, muss das Script gestartet werden. Dadurch erfolgt eine Benutzerabfrage anhand einer GUI. In diese kann der Benutzer einen Sprecher, einen Satz/Satzteil, ein Wort oder ein Phonem eingeben. Eine Kombination der Kriterien möglich.
+Um die das MATLAB-Script 'SearchData' richtig zu bedienen, muss das Script gestartet werden. Dadurch erfolgt eine Benutzerabfrage anhand einer GUI. In diese kann der Benutzer einen Sprecher, einen Satz/Satzteil, ein Wort oder ein Phonem eingeben. Eine Kombination der Kriterien ist möglich.
 
 Als Eingaben dienen die nachfolgenden Beispiele:
 >- Sprecher: arc
@@ -27,7 +27,7 @@ Als Eingaben dienen die nachfolgenden Beispiele:
 - Wort: oily
 - Phonem: d
 
-In diesem Fall würde als Ergebnisausgabe ein Satz gefunden werden. Hiernach erfolgt eine weitere Benutzerabfrage. Dadurch kann der Benutzer selbst entscheiden, ob der gefundene Satz abgespielt werden soll. Bei Verneinung dieser Frage erfolgt die nachstehende Ausgabe:
+In diesem Fall würde als Ergebnisausgabe ein Satz gefunden werden. Hiernach erfolgt eine weitere Benutzerabfrage. Dadurch kann der Benutzer selbst entscheiden, ob der gefundene Satz abgespielt werden soll. Bei Verneinung dieser Frage oder am Ende des Abspielens der Sätze, erfolgt die nachstehende Ausgabe:
 
     Die Sätze die Ihren Kriterien entsprechen (mit Dateipfaden):
     'dr2-marc0/sa2'    ' don't ask me to carry an oily rag like that '
