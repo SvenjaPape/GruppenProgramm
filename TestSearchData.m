@@ -89,4 +89,3 @@ if strcmp(sPerson,'alk0') == 1 && strcmp(sWort,'must')
     'keine Rauschunterdrückung')
     end
 end
-
